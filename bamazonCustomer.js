@@ -23,10 +23,12 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   //console.log("connected as id " + connection.threadId);
-  afterConnection();
+  start();
 });
 
-function afterConnection() {
+function start() {
+
+  // displays all items
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
 
@@ -35,6 +37,55 @@ function afterConnection() {
       console.log("------------------");
     }
 
-    connection.end();
+    // runs prompt function
+    userPrompt();
+
   });
 }
+
+// function to ask users what item they want to buy
+function userPrompt() {
+  // prompt for info about the item they want to buy
+  inquirer
+    .prompt([
+      {
+        name: "userId",
+        type: "input",
+        message: "What is the item ID you would like to buy?"
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many would you like to buy?"
+      },
+    ])
+    .then(function(answer) {
+      // getting information from the item ID the user inputed
+      connection.query("SELECT * FROM products", function(err, res) {
+
+        if (err) throw err;
+
+        var chosenItem;
+        for (var i = 0; i < res.length; i++) {
+          console.log(res[i].item_id);
+          console.log(answer.userId);
+          if (res[i].item_id === answer.userId) {
+            chosenItem = res[i];
+          }
+        }
+        console.log("Chosen Item: " + chosenItem);
+        });
+
+        connection.end();
+    });
+}
+
+// var query = "SELECT stock_quantity FROM products WHERE ?";
+// connection.query(query, { item_id: answer.itemChosen }, function(err, res) {
+//     if (err) throw err;
+//
+//     for (var i = 0; i < res.length; i++) {
+//     console.log("Quantity: " + res[i].stock_quantity);
+//   }
+//
+// });
