@@ -67,25 +67,25 @@ function userPrompt() {
 
         var chosenItem;
         for (var i = 0; i < res.length; i++) {
-          console.log(res[i].item_id);
-          console.log(answer.userId);
-          if (res[i].item_id === answer.userId) {
+          //console.log(res[i].item_id);
+          //console.log(answer.userId);
+          if (res[i].item_id == answer.userId) {
             chosenItem = res[i];
           }
         }
-        console.log("Chosen Item: " + chosenItem);
-        });
+        console.log("Chosen Item: " + chosenItem.product_name);
+
+        // determine if the quantity the user inputed is in stock
+        if (chosenItem.stock_quantity > answer.quantity) {
+          // if their input is less than the mysql amount, tell them it's in stock
+          console.log("We have that in stock!");
+        }
+        else {
+          // if their input is more than the mysql amount, tell them it's not in stock
+          console.log("We don't have that many.");
+        }
 
         connection.end();
     });
+  });
 }
-
-// var query = "SELECT stock_quantity FROM products WHERE ?";
-// connection.query(query, { item_id: answer.itemChosen }, function(err, res) {
-//     if (err) throw err;
-//
-//     for (var i = 0; i < res.length; i++) {
-//     console.log("Quantity: " + res[i].stock_quantity);
-//   }
-//
-// });
