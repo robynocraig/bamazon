@@ -73,19 +73,41 @@ function userPrompt() {
             chosenItem = res[i];
           }
         }
-        console.log("Chosen Item: " + chosenItem.product_name);
+        //console.log("Chosen Item: " + chosenItem.product_name);
 
         // determine if the quantity the user inputed is in stock
         if (chosenItem.stock_quantity > answer.quantity) {
           // if their input is less than the mysql amount, tell them it's in stock
           console.log("We have that in stock!");
+          var updatedStock = (chosenItem.stock_quantity - answer.quantity)
+          //console.log("Updated Stock: " + updatedStock);
+          var cost = (chosenItem.price * answer.quantity)
+          console.log("Your Total Cost: $" + parseFloat(cost).toFixed(2));
+          updateQuantity();
         }
         else {
           // if their input is more than the mysql amount, tell them it's not in stock
           console.log("We don't have that many.");
         }
 
+        // update the quantity in mysql with items purchased
+        function updateQuantity() {
+          var query = connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [
+              {
+                stock_quantity: updatedStock
+              },
+              {
+                item_id: answer.userId
+              }
+            ],
+          );
+        }
+
         connection.end();
     });
   });
 }
+
+// - SAVE INSTALLS -- save
