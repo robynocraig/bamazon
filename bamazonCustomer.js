@@ -109,5 +109,3 @@ function userPrompt() {
     });
   });
 }
-
-// - SAVE INSTALLS -- save
