@@ -35,7 +35,9 @@ function managerActions() {
         "View Products For Sale",
         "View Low Inventory",
         "Add To Inventory",
-        "Add New Product"      ]
+        "Add New Product",
+        "Quit"
+      ]
     })
     .then(function(answer) {
       switch (answer.action) {
@@ -54,6 +56,11 @@ function managerActions() {
       case "Add New Product":
         newProduct();
         break;
+
+      case "Quit":
+        quit();
+        break;
+
       }
     });
 }
@@ -150,10 +157,51 @@ function addInventory() {
 
 function newProduct() {
 
-    // runs prompt function
-    managerActions();
+  // prompt for info about the item being put up for auction
+  inquirer
+    .prompt([
+      {
+        name: "item",
+        type: "input",
+        message: "What is the product name?"
+      },
+      {
+        name: "department",
+        type: "input",
+        message: "What department is the product in?"
+      },
+      {
+        name: "price",
+        type: "input",
+        message: "How much does this item cost? (do not include '$' i.e. 0.99)"
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many items are in stock?"
+      }
+    ])
+    .then(function(answer) {
+      // when finished prompting, insert a new item into the db with that info
+      connection.query(
+        "INSERT INTO products SET ?",
+        {
+          product_name: answer.item,
+          department_name: answer.department,
+          price: answer.price,
+          stock_quantity: answer.quantity
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("Your item was added successfully!");
+          // runs prompt function
+          managerActions();
+        }
+      );
 
-  });
+    });
 }
 
-// See if a Quit option can be added that quits the app
+function quit(){
+  connection.end();
+}
