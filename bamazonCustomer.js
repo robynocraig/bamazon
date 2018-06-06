@@ -1,9 +1,8 @@
 // read and set any environment variables with the dotenv package
 require("dotenv").config();
 
-// asking node to read keys.js file
+// npm packages being used
 var keys = require("./keys.js");
-
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
@@ -12,10 +11,10 @@ var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
 
-  // Your username
+  // username
   user: "root",
 
-  // Your password
+  // password (which is in the .env file)
   password: (keys.mysqlpass.password),
   database: "bamazon_db"
 });
@@ -45,7 +44,7 @@ function start() {
 
 // function to ask users what item they want to buy
 function userPrompt() {
-  // prompt for info about the item they want to buy
+  // inquirer prompting
   inquirer
     .prompt([
       {
@@ -65,22 +64,19 @@ function userPrompt() {
 
         if (err) throw err;
 
+        // selecting the item the user inputed
         var chosenItem;
         for (var i = 0; i < res.length; i++) {
-          //console.log(res[i].item_id);
-          //console.log(answer.userId);
           if (res[i].item_id == answer.userId) {
             chosenItem = res[i];
           }
         }
-        //console.log("Chosen Item: " + chosenItem.product_name);
 
         // determine if the quantity the user inputed is in stock
         if (chosenItem.stock_quantity > answer.quantity) {
           // if their input is less than the mysql amount, tell them it's in stock
           console.log("We have that in stock!");
           var updatedStock = (chosenItem.stock_quantity - answer.quantity)
-          //console.log("Updated Stock: " + updatedStock);
           var cost = (chosenItem.price * answer.quantity)
           console.log("Your Total Cost: $" + parseFloat(cost).toFixed(2));
           updateQuantity();
@@ -105,6 +101,7 @@ function userPrompt() {
           );
         }
 
+        // stop the app
         connection.end();
     });
   });

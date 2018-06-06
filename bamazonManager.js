@@ -1,9 +1,8 @@
 // read and set any environment variables with the dotenv package
 require("dotenv").config();
 
-// asking node to read keys.js file
+// npm packages being used
 var keys = require("./keys.js");
-
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
@@ -15,7 +14,7 @@ var connection = mysql.createConnection({
   // Your username
   user: "root",
 
-  // Your password
+  // password (which is in the .env file)
   password: (keys.mysqlpass.password),
   database: "bamazon_db"
 });
@@ -25,6 +24,7 @@ connection.connect(function(err) {
   managerActions();
 });
 
+// first prompt asking which action they'd like to take
 function managerActions() {
   inquirer
     .prompt({
@@ -39,6 +39,7 @@ function managerActions() {
         "Quit"
       ]
     })
+    // switch case for each action option
     .then(function(answer) {
       switch (answer.action) {
       case "View Products For Sale":
@@ -65,9 +66,9 @@ function managerActions() {
     });
 }
 
+// displays all items
 function viewProducts() {
 
-  // displays all items
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
 
@@ -82,9 +83,9 @@ function viewProducts() {
   });
 }
 
+// displays items with inventory less than 5
 function lowInventory() {
 
-  // displays all items
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
 
@@ -128,7 +129,6 @@ function addInventory() {
           }
         }
 
-        //console.log("Chosen Item: " + chosenItem.product_name);
         var updatedStock = (parseFloat(chosenItem.stock_quantity) + parseFloat(answer.quantity))
         console.log("Updated Stock: " + updatedStock);
         updateQuantity();
@@ -155,9 +155,10 @@ function addInventory() {
   });
 }
 
+// adds new item
 function newProduct() {
 
-  // prompt for info about the item being put up for auction
+  // prompt for info about the item being added
   inquirer
     .prompt([
       {
@@ -202,6 +203,7 @@ function newProduct() {
     });
 }
 
+// quits app
 function quit(){
   connection.end();
 }
